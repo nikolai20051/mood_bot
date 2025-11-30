@@ -1,0 +1,5 @@
+aiogram==3.13.1
+apscheduler==3.10.4
+aiosqlite
+pillow
+wordcloud
