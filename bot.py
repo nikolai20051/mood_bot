@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import re
+import os
+import random
 from collections import Counter
 from datetime import datetime
 
@@ -24,6 +26,7 @@ dp = Dispatcher()
 
 DB_PATH = "mood_bot.db"
 BACKGROUND_IMAGE = "background.png"  # если файла нет, будет белый фон
+MOTIVATIONS_PATH = "motivations.txt" # файл с мотивационными фразами
 ALLOWED_USERNAMES = {
     "potashnik",
     "iamirishk",
@@ -160,6 +163,42 @@ async def send_scheduled_questions():
             await bot.send_message(chat_id=user_id, text=text)
         except Exception as e:
             logging.warning(f"Не удалось отправить сообщение пользователю {user_id}: {e}")
+    
+    async def send_morning_motivation():
+    """
+    Каждое утро отправляет всем пользователям утреннее сообщение
+    с одной мотивационной фразой из файла motivations.txt.
+    """
+    # читаем все фразы из файла
+    try:
+        with open(MOTIVATIONS_PATH, "r", encoding="utf-8") as f:
+            lines = [line.strip() for line in f.readlines() if line.strip()]
+    except FileNotFoundError:
+        logging.error(f"Файл с мотивациями не найден: {MOTIVATIONS_PATH}")
+        return
+
+    if not lines:
+        logging.warning("Файл с мотивациями пуст.")
+        return
+
+    # выбираем случайную фразу
+    phrase = random.choice(lines)
+
+    text = (
+        "Доброе утро, дружочек-пирожочек, время 8 утра, пора вставать. "
+        f"Ведь сегодня {phrase}"
+    )
+
+    # рассылаем всем пользователям
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute("SELECT user_id FROM users")
+        rows = await cursor.fetchall()
+
+    for (user_id,) in rows:
+        try:
+            await bot.send_message(chat_id=user_id, text=text)
+        except Exception as e:
+            logging.warning(f"Не удалось отправить утреннее сообщение пользователю {user_id}: {e}")
 
 
 
@@ -311,6 +350,14 @@ def setup_scheduler():
         day_of_week="mon,wed,fri",
         hour=18,
         minute=45
+    )
+     # Утреннее сообщение каждый будний день (пн-пт) в 08:00
+    scheduler.add_job(
+        send_morning_motivation,
+        "cron",
+        day_of_week="mon-fri",
+        hour=8,
+        minute=0,
     )
 
     scheduler.start()
