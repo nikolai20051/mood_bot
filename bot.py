@@ -164,7 +164,7 @@ async def send_scheduled_questions():
         except Exception as e:
             logging.warning(f"Не удалось отправить сообщение пользователю {user_id}: {e}")
     
-    async def send_morning_motivation():
+async def send_morning_motivation():
     """
     Каждое утро отправляет всем пользователям утреннее сообщение
     с одной мотивационной фразой из файла motivations.txt.
