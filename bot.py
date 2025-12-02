@@ -185,7 +185,7 @@ async def send_morning_motivation():
     phrase = random.choice(lines)
 
     text = (
-        "Доброе утро, дружочек-пирожочек, время 8 утра, пора вставать. "
+        "Доброе утро, дружочек-пирожочек, время 8:30 утра, пора вставать. "
         f"Ведь сегодня {phrase}"
     )
 
@@ -351,13 +351,13 @@ def setup_scheduler():
         hour=18,
         minute=45
     )
-     # Утреннее сообщение каждый будний день (пн-пт) в 08:00
+     # Утреннее сообщение каждый будний день (пн-пт) в 08:30
     scheduler.add_job(
         send_morning_motivation,
         "cron",
         day_of_week="mon-fri",
         hour=8,
-        minute=0,
+        minute=30,
     )
 
     scheduler.start()
