@@ -368,7 +368,7 @@ def setup_scheduler():
         "cron",
         day_of_week="mon-fri",
         hour=10,
-        minute=40,
+        minute=50,
     )
 
     scheduler.start()
