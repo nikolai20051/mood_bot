@@ -80,10 +80,16 @@ async def cmd_start(message: Message):
         )
         await db.commit()
 
+        # Проверим, сколько сейчас пользователей в таблице
+        cursor = await db.execute("SELECT COUNT(*) FROM users")
+        (count,) = await cursor.fetchone()
+        logging.info(f"/start: добавлен/подтверждён пользователь {user_id}, всего пользователей в users: {count}")
+
     await message.answer(
         "Привет, дружок! Изредка я буду тебе писать.\n"
         "Просто отвечай свободным текстом. Все ответы будут анонимны."
     )
+
 
 
 @dp.message(Command("set_admin"))
@@ -362,7 +368,7 @@ def setup_scheduler():
         "cron",
         day_of_week="mon-fri",
         hour=10,
-        minute=30,
+        minute=40,
     )
 
     scheduler.start()
