@@ -169,6 +169,8 @@ async def send_morning_motivation():
     Каждое утро отправляет всем пользователям утреннее сообщение
     с одной мотивационной фразой из файла motivations.txt.
     """
+    logging.info("send_morning_motivation: задача запущена")
+
     # читаем все фразы из файла
     try:
         with open(MOTIVATIONS_PATH, "r", encoding="utf-8") as f:
@@ -194,9 +196,12 @@ async def send_morning_motivation():
         cursor = await db.execute("SELECT user_id FROM users")
         rows = await cursor.fetchall()
 
+    logging.info(f"send_morning_motivation: будет отправлено {len(rows)} пользователям")
+
     for (user_id,) in rows:
         try:
             await bot.send_message(chat_id=user_id, text=text)
+            logging.info(f"send_morning_motivation: отправлено пользователю {user_id}")
         except Exception as e:
             logging.warning(f"Не удалось отправить утреннее сообщение пользователю {user_id}: {e}")
 
