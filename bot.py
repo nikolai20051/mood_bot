@@ -367,8 +367,8 @@ def setup_scheduler():
         send_morning_motivation,
         "cron",
         day_of_week="mon-fri",
-        hour=10,
-        minute=50,
+        hour=8,
+        minute=30,
     )
 
     scheduler.start()
